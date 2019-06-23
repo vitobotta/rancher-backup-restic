@@ -97,9 +97,6 @@ sudo ros service enable /var/lib/rancher/conf/rancher-backup.yml
 sudo ros service up user-cron rancher-backup
 ```
 
-Then reboot.
-
-
 ### Restore from local backup
 
 Find a backup to restore
