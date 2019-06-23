@@ -21,7 +21,7 @@ case "$1" in
 
     # Off site backup with restic
     /usr/bin/restic snapshots > /dev/null || /usr/bin/restic init
-    /usr/bin/restic backup --host rancher /backup/*.gz &> /tmp/backup.log
+    /usr/bin/restic backup --host rancher /backup &> /tmp/backup.log
     /usr/bin/restic forget --prune --keep-last $KEEP_LAST --keep-daily $KEEP_DAILY --keep-weekly $KEEP_WEEKLY --keep-monthly $KEEP_MONTHLY --keep-within $KEEP_WITHIN &>> /tmp/backup.log
 
     cat /tmp/backup.log
