@@ -111,7 +111,7 @@ docker run --rm --name rancher-backup --env LOCAL_BACKUP=<filename> -v $(pwd)/ra
 #### Latest snapshot
 
 ```
-docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock restore
+docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock restore-from-snapshot
 ```
 
 #### An older snapshot

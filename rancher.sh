@@ -27,6 +27,11 @@ case "$1" in
 
     ;;
 
+  "snapshots" )
+    /usr/bin/restic snapshots
+    
+    ;;
+
   "restore-from-snapshot" )
     SNAPSHOT="${RESTORE_SNAPSHOT:-latest}"
 
