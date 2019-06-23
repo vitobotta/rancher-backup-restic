@@ -117,7 +117,7 @@ Then run
 
 ```
 sudo ros service enable /var/lib/rancher/conf/rancher-backup.yml
-sudo ros service up user-cron rancher-backup
+sudo ros service up user-cron rancher-scheduled-backup
 ```
 
 ### Restore from local backup
