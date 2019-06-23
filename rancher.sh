@@ -20,6 +20,7 @@ case "$1" in
     find "/backup" -type f -mtime +$DELETE_OLDER_THAN_X_DAYS -exec rm {} \;
 
     # Off site backup with restic
+    /usr/bin/restic snapshots > /dev/null || /usr/bin/restic init
     /usr/bin/restic backup /backup/*.gz
     /usr/bin/restic forget --prune --keep-last $KEEP_LAST --keep-daily $KEEP_DAILY --keep-weekly $KEEP_WEEKLY --keep-monthly $KEEP_MONTHLY --keep-within $KEEP_WITHIN
 

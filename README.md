@@ -34,10 +34,10 @@ EOD
 ```
 cd /home/rancher
 
-docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.7.0 backup
+docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.8.0 backup
 ```
 
-A backup archive will be created in `rancher/backup`.
+A backup archive will be created in `rancher/backup`. NOTE: time zone for the timestamps in the filenames is UTC.
 
 Optional environment variables with their defaults:
 
@@ -74,7 +74,7 @@ user-cron:
   environment:
     DOCKER_API_VERSION: "1.22"
 rancher-backup:
-  image: vitobotta/rancher-backup-restic:0.7.0
+  image: vitobotta/rancher-backup-restic:0.8.0
   command:
   - "backup"
   volumes:
@@ -82,7 +82,7 @@ rancher-backup:
   - /home/rancher/rancher/backup:/backup
   - /home/rancher/rancher/.restic-settings:/.restic-settings
   labels:
-    cron.schedule: "0 4 * * * ?"
+    cron.schedule: "0 4 * * *"
   environment:
     RANCHER_CONTAINER_NAME: "rancher"
     RANCHER_VERSION: "v2.2.4"
@@ -94,8 +94,7 @@ Then run
 
 ```
 sudo ros service enable /var/lib/rancher/conf/rancher-backup.yml
-sudo ros service up user-cron
-sudo ros service up rancher-backup
+sudo ros service up user-cron rancher-backup
 ```
 
 Then reboot.
@@ -112,7 +111,7 @@ ls -tr /home/rancher/rancher/backup
 Then to restore that backup pass the `LOCAL_BACKUP` environment variable with the backup filename:
 
 ```
-docker run --rm --name rancher-backup --env LOCAL_BACKUP=<filename> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.7.0 restore-from-local-backup
+docker run --rm --name rancher-backup --env LOCAL_BACKUP=<filename> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.8.0 restore-from-local-backup
 ```
 
 Optional environment variables with their defaults:
@@ -129,7 +128,7 @@ BACKUP_DIR=/home/rancher/rancher/backup/
 #### Latest snapshot
 
 ```
-docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.7.0 restore-from-snapshot
+docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.8.0 restore-from-snapshot
 ```
 
 #### An older snapshot
@@ -139,13 +138,13 @@ If you wish to restore a snapshot other than the latest, first find the snapshot
 ```
 cd /home/rancher
 
-docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.7.0 snapshots
+docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.8.0 snapshots
 ```
 
 Then to restore that snapshot pass the `RESTORE_SNAPSHOT` environment variable with the snapshot id:
 
 ```
-docker run --rm --name rancher-backup --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.7.0 restore-from-snapshot
+docker run --rm --name rancher-backup --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.8.0 restore-from-snapshot
 ```
 
 Optional environment variables with their defaults:
