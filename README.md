@@ -86,7 +86,7 @@ user-cron:
   - /var/run/docker.sock:/var/run/docker.sock
   environment:
     DOCKER_API_VERSION: "1.22"
-rancher-backup:
+rancher-scheduled-backup:
   image: vitobotta/rancher-backup-restic:0.14.0
   command:
   - "backup"
