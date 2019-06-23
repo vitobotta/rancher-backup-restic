@@ -91,6 +91,21 @@ EOD
 Then reboot.
 
 
+### Restore from local backup
+
+Find a backup to restore
+
+```
+ls -tr /home/rancher/rancher/backup
+```
+
+Then to restore that backup pass the `LOCAL_BACKUP` environment variable with the backup filename:
+
+```
+docker run --rm --name rancher-backup --env LOCAL_BACKUP=<filename> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock restore-from-local-backup
+```
+
+
 ### Restore from Restic snapshot
 
 #### Latest snapshot
@@ -112,5 +127,5 @@ docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)
 Then to restore that snapshot pass the `RESTORE_SNAPSHOT` environment variable with the snapshot id:
 
 ```
-docker run --rm --name rancher-backup --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock restore
+docker run --rm --name rancher-backup --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock restore-from-snapshot
 ```
