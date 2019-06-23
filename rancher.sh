@@ -21,8 +21,26 @@ case "$1" in
 
     # Off site backup with restic
     /usr/bin/restic snapshots > /dev/null || /usr/bin/restic init
-    /usr/bin/restic backup /backup/*.gz
-    /usr/bin/restic forget --prune --keep-last $KEEP_LAST --keep-daily $KEEP_DAILY --keep-weekly $KEEP_WEEKLY --keep-monthly $KEEP_MONTHLY --keep-within $KEEP_WITHIN
+    /usr/bin/restic backup --host rancher /backup/*.gz &> /tmp/backup.log
+    /usr/bin/restic forget --prune --keep-last $KEEP_LAST --keep-daily $KEEP_DAILY --keep-weekly $KEEP_WEEKLY --keep-monthly $KEEP_MONTHLY --keep-within $KEEP_WITHIN &>> /tmp/backup.log
+
+    cat /tmp/backup.log
+
+    if [ "$EMAIL_NOTIFICATIONS_ENABLED" == "YES" ]; then
+      mkdir -p /etc/ssmtp/
+      cat > /etc/ssmtp/ssmtp.conf <<EOL
+mailhub=${SMTP_HOST}:${SMTP_PORT}
+hostname=${SMTP_HOSTNAME}
+rewriteDomain=${SMTP_HOSTNAME}
+FromLineOverride=YES
+AuthUser=${SMTP_USER}
+AuthPass=${SMTP_PASSWORD}
+UseTLS=${SMTP_TLS}
+UseSTARTTLS=${SMTP_TLS}
+EOL
+
+      (echo "Subject: $EMAIL_SUBJECT"; echo "From: $SENDER_EMAIL"; echo "To: $DEST_EMAIL"; echo ""; cat /tmp/backup.log) | ssmtp $DEST_EMAIL
+    fi
 
     ;;
 
