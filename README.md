@@ -75,7 +75,7 @@ KEEP_WITHIN="2m"
 To schedule a backup with cron in RancherOS create a config file:
 
 ```
-cat <<EOD > /var/lib/rancher/conf/rancher-backup.yml
+cat <<EOD > /var/lib/rancher/conf/backup-container.yml
 user-cron:
   image: rancher/container-crontab:v0.4.0
   uts: host
@@ -86,7 +86,7 @@ user-cron:
   - /var/run/docker.sock:/var/run/docker.sock
   environment:
     DOCKER_API_VERSION: "1.22"
-rancher-scheduled-backup:
+scheduled-backup:
   image: zurajm/rancher-backup-restic:latest
   command:
   - "backup"
@@ -116,7 +116,7 @@ EOD
 Then run
 
 ```
-sudo ros service enable /var/lib/rancher/conf/rancher-backup.yml
+sudo ros service enable /var/lib/rancher/conf/backup-container.yml
 sudo ros service up user-cron rancher-scheduled-backup
 ```
 
@@ -131,7 +131,7 @@ ls -tr /home/rancher/rancher/backup
 Then to restore that backup pass the `LOCAL_BACKUP` environment variable with the backup filename:
 
 ```
-docker run --rm --name rancher-backup --env LOCAL_BACKUP=<filename> -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-local-backup
+docker run --rm --name backup-container --env LOCAL_BACKUP=<filename> -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-local-backup
 ```
 
 Optional environment variables with their defaults:
@@ -147,7 +147,7 @@ BACKUP_DIR=/home/rancher/backup/
 #### Latest snapshot
 
 ```
-docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-snapshot
+docker run --rm --name backup-container -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-snapshot
 ```
 
 #### An older snapshot
@@ -157,13 +157,13 @@ If you wish to restore a snapshot other than the latest, first find the snapshot
 ```
 cd /home/rancher
 
-docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest snapshots
+docker run --rm --name backup-container -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest snapshots
 ```
 
 Then to restore that snapshot pass the `RESTORE_SNAPSHOT` environment variable with the snapshot id:
 
 ```
-docker run --rm --name rancher-backup --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-snapshot
+docker run --rm --name backup-container --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-snapshot
 ```
 
 Optional environment variables with their defaults:
