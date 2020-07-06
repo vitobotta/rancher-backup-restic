@@ -34,7 +34,7 @@ EOD
 ```
 cd /home/rancher
 
-docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock mzuraj/rancher-backup-restic:latest backup
+docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest backup
 ```
 
 A backup archive will be created in `rancher/backup`. NOTE: time zone for the timestamps in the filenames is UTC.
