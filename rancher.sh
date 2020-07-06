@@ -6,12 +6,17 @@ source /.restic-settings
 case "$1" in
   "backup" )
     NOW=$(date +"%Y%m%d-%H%M%S")
+    CURR_TAG=$(docker ps -f name=${RANCHER_CONTAINER_NAME} --format "{{.Image}}")
+    echo CURR_TAG=${CURR_TAG}
+    RANCHER_VERSION=$(echo ${CURR_TAG} | cut -f2 -d:)
+    echo RANCHER_VERSION=${RANCHER_VERSION}
     ARCHIVE="/backup/rancher-data-backup-$RANCHER_VERSION-$NOW.tar.gz"
+    echo ARCHIVE=${ARCHIVE}
 
     # Create local backup
     docker stop $RANCHER_CONTAINER_NAME
-    docker create --volumes-from $RANCHER_CONTAINER_NAME --name "rancher-data-$NOW" rancher/rancher:$RANCHER_VERSION
-    docker run --volumes-from "rancher-data-$NOW" -v "${BACKUP_DIR}:/backup:z" --name "rancher-backup-$NOW" alpine tar zcf $ARCHIVE /var/lib/rancher
+    docker create --volumes-from $RANCHER_CONTAINER_NAME --name "rancher-data-$NOW" ${CURR_TAG}
+    docker run --volumes-from "rancher-data-$NOW" -v "${BACKUP_DIR}:/backup:z" --name "rancher-backup-$NOW" alpine:3.12 tar zcf $ARCHIVE /var/lib/rancher
     docker rm "rancher-data-$NOW"
     docker rm "rancher-backup-$NOW"
     docker start $RANCHER_CONTAINER_NAME
@@ -57,14 +62,14 @@ EOL
     BACKUP_TO_RESTORE=`ls /backup/ -tr | tail -n1`
 
     docker stop $RANCHER_CONTAINER_NAME
-    docker run --rm --volumes-from $RANCHER_CONTAINER_NAME -v "$BACKUP_DIR/:/backup:z" alpine sh -c "rm /var/lib/rancher/* -rf  && tar zxvf /backup/$BACKUP_TO_RESTORE"
+    docker run --rm --volumes-from $RANCHER_CONTAINER_NAME -v "$BACKUP_DIR/:/backup:z" alpine:3.12 sh -c "rm /var/lib/rancher/* -rf  && tar zxvf /backup/$BACKUP_TO_RESTORE"
     docker start $RANCHER_CONTAINER_NAME
 
     ;;
 
   "restore-from-local-backup" )
     docker stop $RANCHER_CONTAINER_NAME
-    docker run --rm --volumes-from $RANCHER_CONTAINER_NAME -v "$BACKUP_DIR/:/backup:z" alpine sh -c "rm /var/lib/rancher/* -rf  && tar zxvf /backup/$LOCAL_BACKUP"
+    docker run --rm --volumes-from $RANCHER_CONTAINER_NAME -v "$BACKUP_DIR/:/backup:z" alpine:3.12 sh -c "rm /var/lib/rancher/* -rf  && tar zxvf /backup/$LOCAL_BACKUP"
     docker start $RANCHER_CONTAINER_NAME
 
     ;;

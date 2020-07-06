@@ -10,7 +10,6 @@ ADD rancher.sh /usr/bin
 COPY *.crt /etc/ssl/certs
 
 ENV RANCHER_CONTAINER_NAME=rancher
-ENV RANCHER_VERSION=v2.4.5
 ENV RESTORE_SNAPSHOT=latest
 ENV BACKUP_DIR=/home/rancher/backup/
 ENV DELETE_OLDER_THAN_X_DAYS="30"

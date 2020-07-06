@@ -4,12 +4,13 @@ This is an image to easily manage backups and restores of a single node Rancher 
 
 ## Usage (e.g. on RancherOS)
 
+- Before biulding Docker image put any custom CAs to the root folder
 - Create a couple directories for the Rancher data and the local backups
 
 ```
 cd /home/rancher
-mkdir -p rancher/data
-mkdir -p rancher/backup
+mkdir -p data
+mkdir -p backup
 ```
 
 - Run Rancher server if not running already
@@ -30,11 +31,11 @@ EOD
 ```
 
 ### Manual backup
-
+Please note that because of the current rancher image version fetching algorithm the backup contaier must not include word *rancher* in it's name.
 ```
 cd /home/rancher
 
-docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest backup
+docker run --rm --name backup-container -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest backup
 ```
 
 A backup archive will be created in `rancher/backup`. NOTE: time zone for the timestamps in the filenames is UTC.
@@ -43,7 +44,6 @@ Optional environment variables with their defaults:
 
 ```
 RANCHER_CONTAINER_NAME=rancher
-RANCHER_VERSION=v2.4.5
 BACKUP_DIR=/home/rancher/backup/
 
 For email notifications:
@@ -138,7 +138,6 @@ Optional environment variables with their defaults:
 
 ```
 RANCHER_CONTAINER_NAME=rancher
-RANCHER_VERSION=v2.4.5
 BACKUP_DIR=/home/rancher/backup/
 ```
 
@@ -171,6 +170,5 @@ Optional environment variables with their defaults:
 
 ```
 RANCHER_CONTAINER_NAME=rancher
-RANCHER_VERSION=v2.4.5
 BACKUP_DIR=/home/rancher/backup/
 ```
