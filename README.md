@@ -98,9 +98,8 @@ scheduled-backup:
     cron.schedule: "0 4 * * *"
   environment:
     RANCHER_CONTAINER_NAME: "rancher"
-    RANCHER_VERSION: "v2.4.5"
     BACKUP_DIR: "/home/rancher/backup/"
-    EMAIL_NOTIFICATIONS_ENABLED: "YES"
+    EMAIL_NOTIFICATIONS_ENABLED: "NO"
     SMTP_HOST: "..."
     SMTP_PORT: "587"
     SMTP_HOSTNAME: "my-domain.com"
@@ -117,7 +116,7 @@ Then run
 
 ```
 sudo ros service enable /var/lib/rancher/conf/backup-container.yml
-sudo ros service up user-cron rancher-scheduled-backup
+sudo ros service up user-cron scheduled-backup
 ```
 
 ### Restore from local backup
