@@ -15,13 +15,13 @@ mkdir -p rancher/backup
 - Run Rancher server if not running already
 
 ```
-docker run -d --name rancher --restart unless-stopped -p 80:80 -p 443:443 -v $(pwd)/rancher/data:/var/lib/rancher rancher/rancher:v2.2.4 --acme-domain your-domain.com
+docker run -d --name rancher --restart unless-stopped -p 80:80 -p 443:443 -v $(pwd)/data:/var/lib/rancher rancher/rancher:v2.2.4 --acme-domain your-domain.com
 ```
 
 - Create a secrets file for Restic
 
 ```
-cat <<EOD > rancher/.restic-settings
+cat <<EOD > .restic-settings
 export RESTIC_REPOSITORY=s3:host/bucket
 export RESTIC_PASSWORD=...
 export AWS_ACCESS_KEY_ID=...
@@ -34,7 +34,7 @@ EOD
 ```
 cd /home/rancher
 
-docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.14.0 backup
+docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock mzuraj/rancher-backup-restic:latest backup
 ```
 
 A backup archive will be created in `rancher/backup`. NOTE: time zone for the timestamps in the filenames is UTC.
@@ -43,8 +43,8 @@ Optional environment variables with their defaults:
 
 ```
 RANCHER_CONTAINER_NAME=rancher
-RANCHER_VERSION=v2.2.4
-BACKUP_DIR=/home/rancher/rancher/backup/
+RANCHER_VERSION=v2.4.5
+BACKUP_DIR=/home/rancher/backup/
 
 For email notifications:
 
@@ -87,19 +87,19 @@ user-cron:
   environment:
     DOCKER_API_VERSION: "1.22"
 rancher-scheduled-backup:
-  image: vitobotta/rancher-backup-restic:0.14.0
+  image: zurajm/rancher-backup-restic:latest
   command:
   - "backup"
   volumes:
   - /var/run/docker.sock:/var/run/docker.sock
-  - /home/rancher/rancher/backup:/backup
-  - /home/rancher/rancher/.restic-settings:/.restic-settings
+  - /home/rancher/backup:/backup
+  - /home/rancher/.restic-settings:/.restic-settings
   labels:
     cron.schedule: "0 4 * * *"
   environment:
     RANCHER_CONTAINER_NAME: "rancher"
-    RANCHER_VERSION: "v2.2.4"
-    BACKUP_DIR: "/home/rancher/rancher/backup/"
+    RANCHER_VERSION: "v2.4.5"
+    BACKUP_DIR: "/home/rancher/backup/"
     EMAIL_NOTIFICATIONS_ENABLED: "YES"
     SMTP_HOST: "..."
     SMTP_PORT: "587"
@@ -131,15 +131,15 @@ ls -tr /home/rancher/rancher/backup
 Then to restore that backup pass the `LOCAL_BACKUP` environment variable with the backup filename:
 
 ```
-docker run --rm --name rancher-backup --env LOCAL_BACKUP=<filename> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.14.0 restore-from-local-backup
+docker run --rm --name rancher-backup --env LOCAL_BACKUP=<filename> -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-local-backup
 ```
 
 Optional environment variables with their defaults:
 
 ```
 RANCHER_CONTAINER_NAME=rancher
-RANCHER_VERSION=v2.2.4
-BACKUP_DIR=/home/rancher/rancher/backup/
+RANCHER_VERSION=v2.4.5
+BACKUP_DIR=/home/rancher/backup/
 ```
 
 
@@ -148,7 +148,7 @@ BACKUP_DIR=/home/rancher/rancher/backup/
 #### Latest snapshot
 
 ```
-docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.14.0 restore-from-snapshot
+docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-snapshot
 ```
 
 #### An older snapshot
@@ -158,19 +158,19 @@ If you wish to restore a snapshot other than the latest, first find the snapshot
 ```
 cd /home/rancher
 
-docker run --rm --name rancher-backup -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.14.0 snapshots
+docker run --rm --name rancher-backup -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest snapshots
 ```
 
 Then to restore that snapshot pass the `RESTORE_SNAPSHOT` environment variable with the snapshot id:
 
 ```
-docker run --rm --name rancher-backup --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/rancher/backup:/backup -v $(pwd)/rancher/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock vitobotta/rancher-backup-restic:0.14.0 restore-from-snapshot
+docker run --rm --name rancher-backup --env RESTORE_SNAPSHOT=<snapshot id> -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest restore-from-snapshot
 ```
 
 Optional environment variables with their defaults:
 
 ```
 RANCHER_CONTAINER_NAME=rancher
-RANCHER_VERSION=v2.2.4
-BACKUP_DIR=/home/rancher/rancher/backup/
+RANCHER_VERSION=v2.4.5
+BACKUP_DIR=/home/rancher/backup/
 ```

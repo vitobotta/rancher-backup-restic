@@ -1,17 +1,18 @@
-FROM alpine
+FROM amd64/alpine:3.12
 
 RUN apk add --update --no-cache ca-certificates fuse openssh-client bzip2 bash docker ssmtp
-RUN wget -O /tmp/restic_0.9.5_linux_amd64.bz2 https://github.com/restic/restic/releases/download/v0.9.5/restic_0.9.5_linux_amd64.bz2
-RUN bzip2 -d /tmp/restic_0.9.5_linux_amd64.bz2
-RUN mv /tmp/restic_0.9.5_linux_amd64 /usr/bin/restic
-RUN chmod +x /usr/bin/restic
+RUN wget -O /tmp/restic_0.9.6_linux_amd64.bz2 https://github.com/restic/restic/releases/download/v0.9.6/restic_0.9.6_linux_amd64.bz2 \
+    && bzip2 -d /tmp/restic_0.9.6_linux_amd64.bz2 \
+    && mv /tmp/restic_0.9.6_linux_amd64 /usr/bin/restic \
+    && chmod +x /usr/bin/restic
 
 ADD rancher.sh /usr/bin
+COPY *.crt /etc/ssl/certs
 
 ENV RANCHER_CONTAINER_NAME=rancher
-ENV RANCHER_VERSION=v2.2.4
+ENV RANCHER_VERSION=v2.4.5
 ENV RESTORE_SNAPSHOT=latest
-ENV BACKUP_DIR=/home/rancher/rancher/backup/
+ENV BACKUP_DIR=/home/rancher/backup/
 ENV DELETE_OLDER_THAN_X_DAYS="30"
 ENV KEEP_LAST="30"
 ENV KEEP_DAILY="15"
