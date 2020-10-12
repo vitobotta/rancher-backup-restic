@@ -26,9 +26,10 @@ case "$1" in
 
     # Off site backup with restic
     TAG="${RESTIC_TAG:-cron}"
+    HOST="${RANCHER_HOST:-rancher}"
     /usr/bin/restic snapshots > /dev/null || /usr/bin/restic init
-    /usr/bin/restic backup --host rancher --tag ${CURR_TAG} --tag ${TAG} /backup &> /tmp/backup.log
-    /usr/bin/restic forget --prune --keep-last $KEEP_LAST --keep-daily $KEEP_DAILY --keep-weekly $KEEP_WEEKLY --keep-monthly $KEEP_MONTHLY --keep-within $KEEP_WITHIN &>> /tmp/backup.log
+    /usr/bin/restic backup --host ${HOST} --tag ${CURR_TAG} --tag ${TAG} /backup &> /tmp/backup.log
+    /usr/bin/restic forget --host ${HOST} --prune --keep-last $KEEP_LAST --keep-daily $KEEP_DAILY --keep-weekly $KEEP_WEEKLY --keep-monthly $KEEP_MONTHLY --keep-within $KEEP_WITHIN &>> /tmp/backup.log
 
     cat /tmp/backup.log
 
