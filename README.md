@@ -32,10 +32,15 @@ EOD
 
 ### Manual backup
 Please note that because of the current rancher image version fetching algorithm the backup contaier must not include word *rancher* in it's name.
+
+You can pass `RESTIC_HOST` environment variable (default *restic*). Restic will only act on the backup set from this *host* (forget, snapshots)
+
+You can mount custom certificates (crt) to */etc/ssl/certs* by specifying mountpoints like this:
+`-v $(pwd)/certs/custom_cert.crt:/etc/ssl/certs/custom_sert.crt`
 ```
 cd /home/rancher
 
-docker run --rm --name backup-container -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest backup
+docker run --rm --name backup-container --env RESTIC_HOST=${HOSTNAME} -v $(pwd)/backup:/backup -v $(pwd)/.restic-settings:/.restic-settings -v /var/run/docker.sock:/var/run/docker.sock zurajm/rancher-backup-restic:latest backup
 ```
 
 A backup archive will be created in `rancher/backup`. NOTE: time zone for the timestamps in the filenames is UTC.
