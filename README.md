@@ -77,7 +77,7 @@ To schedule a backup with cron in RancherOS create a config file:
 ```
 cat <<EOD > /var/lib/rancher/conf/backup-container.yml
 user-cron:
-  image: rancher/container-crontab:v0.4.0
+  image: rancher/container-crontab:v0.5.0
   uts: host
   net: none
   privileged: true
