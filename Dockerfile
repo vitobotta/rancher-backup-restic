@@ -1,9 +1,9 @@
 FROM amd64/alpine:3.12
 
 RUN apk add --update --no-cache ca-certificates fuse openssh-client bzip2 bash docker ssmtp
-RUN wget -O /tmp/restic_0.9.6_linux_amd64.bz2 https://github.com/restic/restic/releases/download/v0.9.6/restic_0.9.6_linux_amd64.bz2 \
-    && bzip2 -d /tmp/restic_0.9.6_linux_amd64.bz2 \
-    && mv /tmp/restic_0.9.6_linux_amd64 /usr/bin/restic \
+RUN wget -O /tmp/restic_0.10.0_linux_amd64.bz2 https://github.com/restic/restic/releases/download/v0.10.0/restic_0.10.0_linux_amd64.bz2 \
+    && bzip2 -d /tmp/restic_0.10.0_linux_amd64.bz2 \
+    && mv /tmp/restic_0.10.0_linux_amd64 /usr/bin/restic \
     && chmod +x /usr/bin/restic
 
 ADD rancher.sh /usr/bin
