@@ -1,0 +1,25 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Get release version
+        id: get_version
+        run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF:10})" >> $GITHUB_ENV
+      - name: Inject cert
+        run: 'echo ${{ secrets.CERT }} > ./cert.crt'
+      - name: Build and Publish latest Docker image
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: zurajm/rancher-backup-restic
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          # registry: hub.docker.com
+          dockerfile: Dockerfile
+          tags: "latest,${{ env.RELEASE_VERSION }}"
