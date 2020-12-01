@@ -28,5 +28,7 @@ ENV SMTP_PASSWORD=""
 ENV SENDER_EMAIL=""
 ENV DEST_EMAIL=""
 ENV EMAIL_SUBJECT="Rancher backup"
+# How many days of the local backups we will keep on BACKUP_DIR
+ENV DELETE_OLDER_THAN_X_DAYS="3"
 
 ENTRYPOINT ["/usr/bin/rancher.sh"]

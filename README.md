@@ -68,6 +68,7 @@ EMAIL_SUBJECT="Rancher backup"
 Optional environment variables for Restic with their defaults (see Restic documentation):
 
 ```
+DELETE_OLDER_THAN_X_DAYS="3" #how many days backups will be kept on local storage, independent of Restic settings
 KEEP_LAST="30"
 KEEP_DAILY="15"
 KEEP_WEEKLY="8"

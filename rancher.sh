@@ -21,7 +21,7 @@ case "$1" in
     docker rm "rancher-backup-$NOW"
     docker start $RANCHER_CONTAINER_NAME
 
-    # Delete old backups
+    # Delete old local backups
     find "/backup" -type f -mtime +$DELETE_OLDER_THAN_X_DAYS -exec rm {} \;
 
     # Off site backup with restic
